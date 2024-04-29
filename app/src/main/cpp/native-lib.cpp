@@ -112,91 +112,68 @@ int32_t sfdc_tc_execute(const char *tc_name, struct tc_record *record, uint16_t 
     return 1;
 }
 
+void print() {}
+
+
 extern "C" {
 JNIEXPORT jobject JNICALL
 Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj, jstring tcName, jobject recordObject,
                                                         jint waveSize) {
     const char *tc_name = env->GetStringUTFChars(tcName, NULL);
     struct tc_record record;
+    //调用so库本地接口  修改recordObject的值
     jint result = sfdc_tc_execute(tc_name, &record, waveSize);
-
-    for (int i = 0; i < waveSize; ++i) {
-        __android_log_print(ANDROID_LOG_ERROR, "tag", "%hu", record.play_times);
-        __android_log_print(ANDROID_LOG_ERROR, "tag", "%d", result);
-        __android_log_print(ANDROID_LOG_ERROR, "tag", "wave_index: %hu", record.play_record_list[i].wave_index);
-        __android_log_print(ANDROID_LOG_ERROR, "tag", "temperature: %f", record.play_record_list[i].temperature);
-        __android_log_print(ANDROID_LOG_ERROR, "tag", "output_f0: %f", record.play_record_list[i].output_f0);
-        __android_log_print(ANDROID_LOG_ERROR, "tag", "relative_bemf: %f", record.play_record_list[i].relative_bemf);
-    }
-
     // 获取Java类的引用
     jclass recordClass = env->GetObjectClass(recordObject);
-
     // 获取Java类中字段的引用
     jfieldID playTimesField = env->GetFieldID(recordClass, "play_times", "S");
     jfieldID playRecordListField = env->GetFieldID(recordClass, "play_record_list", "Ljava/util/ArrayList;");
-
     // 创建Java数组对象
     jclass playRecordClass = env->FindClass("com/example/ndkdemo/PlayRecord");
     jobjectArray playRecordArray = env->NewObjectArray(waveSize, playRecordClass, NULL);
-
     // 设置playTimes字段的值
     env->SetShortField(recordObject, playTimesField, record.play_times);
-
     // 设置playRecordList字段的值
     for (int i = 0; i < waveSize; ++i) {
         // 创建PlayRecord对象
         jobject playRecordObject = env->NewObject(playRecordClass, env->GetMethodID(playRecordClass, "<init>", "()V"));
-
         // 获取PlayRecord类中字段的引用
         jfieldID waveIndexField = env->GetFieldID(playRecordClass, "wave_index", "S");
         jfieldID temperatureField = env->GetFieldID(playRecordClass, "temperature", "F");
         jfieldID outputF0Field = env->GetFieldID(playRecordClass, "output_f0", "F");
         jfieldID relativeBemfField = env->GetFieldID(playRecordClass, "relative_bemf", "F");
-
         // 设置PlayRecord对象的字段值
         env->SetShortField(playRecordObject, waveIndexField, record.play_record_list[i].wave_index);
         env->SetFloatField(playRecordObject, temperatureField, record.play_record_list[i].temperature);
         env->SetFloatField(playRecordObject, outputF0Field, record.play_record_list[i].output_f0);
         env->SetFloatField(playRecordObject, relativeBemfField, record.play_record_list[i].relative_bemf);
-
         // 将PlayRecord对象添加到数组中
         env->SetObjectArrayElement(playRecordArray, i, playRecordObject);
-
         // 释放PlayRecord对象的引用
         env->DeleteLocalRef(playRecordObject);
     }
-
     // 获取ArrayList类的引用
     jclass arrayListClass = env->FindClass("java/util/ArrayList");
     jmethodID arrayListCtor = env->GetMethodID(arrayListClass, "<init>", "()V");
     jmethodID arrayListAdd = env->GetMethodID(arrayListClass, "add", "(Ljava/lang/Object;)Z");
-
     // 创建一个新的ArrayList对象
     jobject arrayListObj = env->NewObject(arrayListClass, arrayListCtor);
-
     // 获取jobjectArray的长度
     jsize length = env->GetArrayLength(playRecordArray);
-
     // 遍历jobjectArray，将每个元素添加到ArrayList中
     for (jsize i = 0; i < length; ++i) {
         jobject element = env->GetObjectArrayElement(playRecordArray, i);
         env->CallBooleanMethod(arrayListObj, arrayListAdd, element);
         env->DeleteLocalRef(element);
     }
-
     // 释放引用
     env->DeleteLocalRef(arrayListClass);
-
     // 设置playRecordList字段的值
     env->SetObjectField(recordObject, playRecordListField, arrayListObj);
-
     // 释放引用
     env->DeleteLocalRef(playRecordArray);
     env->DeleteLocalRef(playRecordClass);
     env->ReleaseStringUTFChars(tcName, tc_name);
-
-    // 返回Java对象
     return recordObject;
 }
 }

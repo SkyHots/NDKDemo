@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         stu.setName("张三");
         stu.setAge(18);
         students.add(stu);
-        Log.e(TAG, "tranListToArray: " + Arrays.toString(tranListToArray(students, students.size())));
+        Log.e(TAG, "tranListToArray: " + Arrays.toString(tranListToArray(students)));
 
     }
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     public native void changeName();
 
-    public native Student[] tranListToArray(ArrayList<Student> students, int size);
+    public native Student[] tranListToArray(ArrayList<Student> students);
 
 
 }

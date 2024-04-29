@@ -202,16 +202,19 @@ Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj
 }
 extern "C"
 JNIEXPORT jobjectArray JNICALL
-Java_com_example_ndkdemo_MainActivity_tranListToArray(JNIEnv *env, jobject thiz, jobject students, jint listSize) {
+Java_com_example_ndkdemo_MainActivity_tranListToArray(JNIEnv *env, jobject thiz, jobject students) {
     // 获取Student类的引用
     jclass studentClass = env->FindClass("com/example/ndkdemo/Student");
-    // 创建Student[]数组
-    jobjectArray studentArray = env->NewObjectArray(listSize, studentClass, NULL);
-    // 获取ArrayList类的引用和get方法的ID
+
+    // 获取ArrayList类的引用和get和size方法的ID
     jclass arrayListClass = env->FindClass("java/util/ArrayList");
     jmethodID getMethodId = env->GetMethodID(arrayListClass, "get", "(I)Ljava/lang/Object;");
+    jmethodID sizeMethodId = env->GetMethodID(arrayListClass, "size", "()I");
+    jint size = env->CallIntMethod(students, sizeMethodId);
+    // 创建Student[]数组
+    jobjectArray studentArray = env->NewObjectArray(size, studentClass, NULL);
     // 遍历ArrayList，将每个Student对象添加到Student[]数组中
-    for (int i = 0; i < listSize; i++) {
+    for (int i = 0; i < size; i++) {
         jobject studentObject = env->CallObjectMethod(students, getMethodId, i);
         env->SetObjectArrayElement(studentArray, i, studentObject);
         env->DeleteLocalRef(studentObject);

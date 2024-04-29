@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<PlayRecord> playRecordList = new ArrayList<>();
         playRecordList.add(new PlayRecord((short) 0, 1, 2, 3));
         tcRecord.play_record_list = playRecordList;
-        binding.textView.setText(new Gson().toJson(sfdc_tc_execute("haha", tcRecord, 9)));
+        binding.textView.setText(new Gson().toJson(sfdc_tc_execute("haha", tcRecord, 1)));
 
         Student student = new Student();
         student.setName("");
@@ -46,6 +46,13 @@ public class MainActivity extends AppCompatActivity {
         changeName();
         Log.e(TAG, "after changed name: " + name);
 
+        ArrayList<Student> students = new ArrayList<>();
+        Student stu = new Student();
+        stu.setName("张三");
+        stu.setAge(18);
+        students.add(stu);
+        Log.e(TAG, "tranListToArray: " + Arrays.toString(tranListToArray(students, students.size())));
+
     }
 
     public native TCRecord sfdc_tc_execute(String name, TCRecord record, int waveSize);
@@ -57,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     public native byte[] getByte(byte[] bytes);
 
     public native void changeName();
+
+    public native Student[] tranListToArray(ArrayList<Student> students, int size);
 
 
 }

@@ -1,12 +1,13 @@
 package com.example.ndkdemo;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.ndkdemo.databinding.ActivityMainBinding;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,17 +35,28 @@ public class MainActivity extends AppCompatActivity {
         tcRecord.play_record_list = playRecordList;
         binding.textView.setText(new Gson().toJson(sfdc_tc_execute("haha", tcRecord, 9)));
 
+        Student student = new Student();
+        student.setName("");
+        student.setAge(18);
+        Log.e(TAG, "getStudent: " + new Gson().toJson(getStudentList(student, 5)));
+        Log.e(TAG, "stringFromJNI: " + stringFromJNI());
+        Log.e(TAG, "getByte: " + Arrays.toString(getByte(new byte[]{1, 2, 3, 4, 5, 6, 7})));
+
+        Log.e(TAG, "name: " + name);
+        changeName();
+        Log.e(TAG, "after changed name: " + name);
 
     }
 
     public native TCRecord sfdc_tc_execute(String name, TCRecord record, int waveSize);
 
-    public native List<Student> getStudent(Student student);
+    public native ArrayList<Student> getStudentList(Student student, int size);
 
     public native String stringFromJNI();
 
     public native byte[] getByte(byte[] bytes);
 
     public native void changeName();
+
 
 }

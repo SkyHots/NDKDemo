@@ -10,7 +10,7 @@ struct student {
 extern "C" JNIEXPORT jobject
 
 JNICALL
-Java_com_example_ndkdemo_MainActivity_getStudent(JNIEnv *env, jobject thiz, jobject student) {
+Java_com_example_ndkdemo_MainActivity_getStudentList(JNIEnv *env, jobject thiz, jobject student, jint len) {
     // 获取 Student 类的引用
     jclass studentClass = env->GetObjectClass(student);
 
@@ -39,7 +39,7 @@ Java_com_example_ndkdemo_MainActivity_getStudent(JNIEnv *env, jobject thiz, jobj
     jint ageValue = env->GetIntField(student, ageFieldID) + 1;
 
     // 创建两个新的 Student 对象，并设置相同的姓名和年龄
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < len; i++) {
         // 创建新的 Student 对象
         jobject newStudent = env->NewObject(studentClass, env->GetMethodID(studentClass, "<init>", "()V"));
 
@@ -65,28 +65,22 @@ Java_com_example_ndkdemo_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndkdemo_MainActivity_changeName(JNIEnv *env, jobject thiz) {
-    jclass clazz = env->FindClass("com/example/ndkdemo/MainActivity");
-    jfieldID id = env->GetFieldID(clazz, "name", "Ljava/lang/String;");
-    env->
-            SetObjectField(thiz, id, env
-            ->NewStringUTF("222"));
+    jclass clazz = env->GetObjectClass(thiz);
+    jfieldID name = env->GetFieldID(clazz, "name", "Ljava/lang/String;");
+    env->SetObjectField(thiz, name, env->NewStringUTF("MainActivity"));
 }
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
 Java_com_example_ndkdemo_MainActivity_getByte(JNIEnv *env, jobject thiz, jbyteArray bytes) {
-    jsize length = env->GetArrayLength(bytes);
+    jsize jsize1 = env->GetArrayLength(bytes);
     jbyte *data = env->GetByteArrayElements(bytes, nullptr);
-
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < jsize1; ++i) {
         data[i] = data[i] + 1;
     }
-
-    jbyteArray result = env->NewByteArray(length);
-    env->SetByteArrayRegion(result, 0, length, data);
-
-    env->ReleaseByteArrayElements(bytes, data,
-                                  0);
+    jbyteArray result = env->NewByteArray(jsize1);
+    env->SetByteArrayRegion(result, 0, jsize1, data);
+    env->ReleaseByteArrayElements(bytes, data, 0);
     return result;
 }
 

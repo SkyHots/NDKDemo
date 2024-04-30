@@ -115,7 +115,7 @@ int32_t sfdc_tc_execute(const char *tc_name, struct tc_record *record, uint16_t 
 void print() {}
 
 
-extern "C" {
+extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj, jstring tcName, jobject recordObject,
                                                         jint waveSize) {
@@ -176,7 +176,7 @@ Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj
     env->ReleaseStringUTFChars(tcName, tc_name);
     return recordObject;
 }
-}
+
 extern "C"
 JNIEXPORT jobjectArray JNICALL
 Java_com_example_ndkdemo_MainActivity_tranListToArray(JNIEnv *env, jobject thiz, jobject students) {

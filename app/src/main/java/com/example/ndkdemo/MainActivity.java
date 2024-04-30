@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "after changed name: " + name);
 
         ArrayList<Student> students = new ArrayList<>();
-        Student stu = new Student();
-        stu.setName("张三");
-        stu.setAge(18);
-        students.add(stu);
+        for (int i = 0; i < 5; i++) {
+            Student stu = new Student();
+            stu.setName("张三");
+            stu.setAge(18);
+            students.add(stu);
+        }
         Log.e(TAG, "tranListToArray: " + Arrays.toString(tranListToArray(students)));
 
     }

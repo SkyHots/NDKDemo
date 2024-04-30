@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class TCRecord {
 
+    int result;
     short play_times;
     ArrayList<PlayRecord> play_record_list;
 

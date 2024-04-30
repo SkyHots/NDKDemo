@@ -43,10 +43,6 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "stringFromJNI: " + stringFromJNI());
         Log.e(TAG, "getByte: " + Arrays.toString(getByte(new byte[]{1, 2, 3, 4, 5, 6, 7})));
 
-        Log.e(TAG, "name: " + name);
-        changeName();
-        Log.e(TAG, "after changed name: " + name);
-
         ArrayList<Student> students = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Student stu = new Student();
@@ -56,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.e(TAG, "tranListToArray: " + Arrays.toString(tranListToArray(students)));
 
+
+        Student student1 = new Student();
+        student1.setName("444");
+        student1.setAge(12);
+        Log.e(TAG, "Student: " + new Gson().toJson(changeStudentName(student1)));
     }
 
     public native TCRecord sfdc_tc_execute(String name, TCRecord record);
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     public native byte[] getByte(byte[] bytes);
 
-    public native void changeName();
+    public native Student changeStudentName(Student student);
 
     public native Student[] tranListToArray(ArrayList<Student> students);
 

@@ -65,28 +65,32 @@ Java_com_example_ndkdemo_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz) {
 }
 
 extern "C"
-JNIEXPORT void JNICALL
-Java_com_example_ndkdemo_MainActivity_changeName(JNIEnv *env, jobject thiz) {
-    jclass clazz = env->GetObjectClass(thiz);
-    jfieldID name = env->GetFieldID(clazz, "name", "Ljava/lang/String;");
-    env->SetObjectField(thiz, name, env->NewStringUTF("MainActivity"));
+JNIEXPORT jobject JNICALL
+Java_com_example_ndkdemo_MainActivity_changeStudentName(JNIEnv *env, jobject thiz, jobject student) {
+    jclass clazz = env->GetObjectClass(student);
+    jmethodID setName = env->GetMethodID(clazz, "setName", "(Ljava/lang/String;)V");
+    jstring changedName = env->NewStringUTF("changedName");
+    env->CallVoidMethod(student, setName, changedName);
+    env->DeleteLocalRef(changedName);
+    return student;
 }
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
 Java_com_example_ndkdemo_MainActivity_getByte(JNIEnv *env, jobject thiz, jbyteArray bytes) {
-    jsize jsize1 = env->GetArrayLength(bytes);
+    jsize arrayLength = env->GetArrayLength(bytes);
     jbyte *data = env->GetByteArrayElements(bytes, nullptr);
-    for (int i = 0; i < jsize1; ++i) {
+    for (int i = 0; i < arrayLength; ++i) {
         data[i] = data[i] + 1;
     }
-    jbyteArray result = env->NewByteArray(jsize1);
-    env->SetByteArrayRegion(result, 0, jsize1, data);
+    jbyteArray result = env->NewByteArray(arrayLength);
+    env->SetByteArrayRegion(result, 0, arrayLength, data);
     env->ReleaseByteArrayElements(bytes, data, 0);
     return result;
 }
 
 struct tc_record {
+    int16_t result;
     uint16_t play_times;
     struct play_record *play_record_list;
 };
@@ -102,7 +106,7 @@ int32_t sfdc_tc_execute(const char *tc_name, struct tc_record *record, uint16_t 
     // 假设返回的play_times为2
     record->play_times = 2;
     // 动态分配存储play_records的内存
-    struct play_record *play_records = (struct play_record *) malloc(record->play_times * sizeof(struct play_record));
+    struct play_record *play_records = (struct play_record *) malloc(size * sizeof(struct play_record));
     for (int i = 0; i < size; ++i) {
         play_records[i].wave_index = i;
         play_records[i].temperature = i + 1;
@@ -114,8 +118,6 @@ int32_t sfdc_tc_execute(const char *tc_name, struct tc_record *record, uint16_t 
     return 1;
 }
 
-void print() {}
-
 
 extern "C"
 JNIEXPORT jobject JNICALL
@@ -126,6 +128,7 @@ Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj
     jclass recordClass = env->GetObjectClass(recordObject);
     // 获取Java类中字段的引用
     jfieldID playTimesField = env->GetFieldID(recordClass, "play_times", "S");
+    jfieldID resultField = env->GetFieldID(recordClass, "result", "I");
     jfieldID playRecordListField = env->GetFieldID(recordClass, "play_record_list", "Ljava/util/ArrayList;");
     jobject waveList = env->GetObjectField(recordObject, playRecordListField);
     jclass listClass = env->FindClass("java/util/ArrayList");
@@ -139,6 +142,7 @@ Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj
     jobjectArray playRecordArray = env->NewObjectArray(waveSize, playRecordClass, NULL);
     // 设置playTimes字段的值
     env->SetShortField(recordObject, playTimesField, record.play_times);
+    env->SetIntField(recordObject, resultField, result);
     // 设置playRecordList字段的值
     for (int i = 0; i < waveSize; ++i) {
         // 创建PlayRecord对象

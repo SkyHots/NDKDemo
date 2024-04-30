@@ -31,9 +31,11 @@ public class MainActivity extends AppCompatActivity {
         TCRecord tcRecord = new TCRecord();
         tcRecord.play_times = 4;
         ArrayList<PlayRecord> playRecordList = new ArrayList<>();
-        playRecordList.add(new PlayRecord((short) 0, 1, 2, 3));
+        for (int i = 0; i < 5; i++) {
+            playRecordList.add(new PlayRecord((short) 0, 1, 2, 3));
+        }
         tcRecord.play_record_list = playRecordList;
-        binding.textView.setText(new Gson().toJson(sfdc_tc_execute("haha", tcRecord, 1)));
+        binding.textView.setText(new Gson().toJson(sfdc_tc_execute("haha", tcRecord)));
 
         Student student = new Student();
         student.setName("");
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public native TCRecord sfdc_tc_execute(String name, TCRecord record, int waveSize);
+    public native TCRecord sfdc_tc_execute(String name, TCRecord record);
 
     public native ArrayList<Student> getStudentList(Student student, int size);
 

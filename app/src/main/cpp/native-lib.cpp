@@ -117,17 +117,21 @@ void print() {}
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj, jstring tcName, jobject recordObject,
-                                                        jint waveSize) {
+Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj, jstring tcName, jobject recordObject) {
     const char *tc_name = env->GetStringUTFChars(tcName, NULL);
     struct tc_record record;
-    //调用so库本地接口  修改recordObject的值
-    jint result = sfdc_tc_execute(tc_name, &record, waveSize);
     // 获取Java类的引用
     jclass recordClass = env->GetObjectClass(recordObject);
     // 获取Java类中字段的引用
     jfieldID playTimesField = env->GetFieldID(recordClass, "play_times", "S");
     jfieldID playRecordListField = env->GetFieldID(recordClass, "play_record_list", "Ljava/util/ArrayList;");
+    jobject waveList = env->GetObjectField(recordObject, playRecordListField);
+    jclass listClass = env->FindClass("java/util/ArrayList");
+    jmethodID size = env->GetMethodID(listClass, "size", "()I");
+    jint waveSize = env->CallIntMethod(waveList, size);
+
+    //调用so库本地接口  修改recordObject的值
+    jint result = sfdc_tc_execute(tc_name, &record, waveSize);
     // 创建Java数组对象
     jclass playRecordClass = env->FindClass("com/example/ndkdemo/PlayRecord");
     jobjectArray playRecordArray = env->NewObjectArray(waveSize, playRecordClass, NULL);

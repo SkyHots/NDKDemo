@@ -38,9 +38,8 @@ public class MainActivity extends AppCompatActivity {
         binding.textView.setText(new Gson().toJson(sfdc_tc_execute("haha", tcRecord)));
 
         Student student = new Student();
-        student.setName("");
         student.setAge(18);
-        Log.e(TAG, "getStudent: " + new Gson().toJson(getStudentList(student, 5)));
+        Log.e(TAG, "getStudentList: " + new Gson().toJson(getStudentList(student, 5)));
         Log.e(TAG, "stringFromJNI: " + stringFromJNI());
         Log.e(TAG, "getByte: " + Arrays.toString(getByte(new byte[]{1, 2, 3, 4, 5, 6, 7})));
 

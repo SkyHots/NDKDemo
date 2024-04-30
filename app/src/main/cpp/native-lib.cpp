@@ -28,7 +28,9 @@ Java_com_example_ndkdemo_MainActivity_getStudentList(JNIEnv *env, jobject thiz, 
 
     // 获取原始姓名和年龄值
     jstring nameValue = static_cast<jstring>(env->GetObjectField(student, nameFieldID));
+    nameValue = nameValue == nullptr ? env->NewStringUTF("") : nameValue;
 
+    //jstring转化成c++的字符串  然后拼接修改字符串的值
     const char *nameChars = env->GetStringUTFChars(nameValue, nullptr);
     std::string nameString(nameChars);
     std::string newString = nameString + "aaa";

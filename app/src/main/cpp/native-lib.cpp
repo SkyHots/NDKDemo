@@ -13,46 +13,35 @@ JNICALL
 Java_com_example_ndkdemo_MainActivity_getStudentList(JNIEnv *env, jobject thiz, jobject student, jint len) {
     // 获取 Student 类的引用
     jclass studentClass = env->GetObjectClass(student);
-
     // 获取 name 和 age 字段的 ID
     jfieldID nameFieldID = env->GetFieldID(studentClass, "name", "Ljava/lang/String;");
     jfieldID ageFieldID = env->GetFieldID(studentClass, "age", "I");
-
     // 创建一个 ArrayList 对象
     jclass arrayListClass = env->FindClass("java/util/ArrayList");
     jmethodID arrayListConstructor = env->GetMethodID(arrayListClass, "<init>", "()V");
     jobject arrayListObj = env->NewObject(arrayListClass, arrayListConstructor);
-
     // 获取 ArrayList 的 add 方法的 ID
     jmethodID arrayListAddMethod = env->GetMethodID(arrayListClass, "add", "(Ljava/lang/Object;)Z");
-
     // 获取原始姓名和年龄值
     jstring nameValue = static_cast<jstring>(env->GetObjectField(student, nameFieldID));
     nameValue = nameValue == nullptr ? env->NewStringUTF("") : nameValue;
-
     //jstring转化成c++的字符串  然后拼接修改字符串的值
     const char *nameChars = env->GetStringUTFChars(nameValue, nullptr);
     std::string nameString(nameChars);
     std::string newString = nameString + "aaa";
-
     env->ReleaseStringUTFChars(nameValue, nameChars);
-
     jstring newNameValue = env->NewStringUTF(newString.c_str());
     jint ageValue = env->GetIntField(student, ageFieldID) + 1;
-
     // 创建两个新的 Student 对象，并设置相同的姓名和年龄
     for (int i = 0; i < len; i++) {
         // 创建新的 Student 对象
         jobject newStudent = env->NewObject(studentClass, env->GetMethodID(studentClass, "<init>", "()V"));
-
         // 设置姓名和年龄字段值
         env->SetObjectField(newStudent, nameFieldID, newNameValue);
         env->SetIntField(newStudent, ageFieldID, ageValue);
-
         // 将新的 Student 对象添加到 ArrayList 中
         env->CallBooleanMethod(arrayListObj, arrayListAddMethod, newStudent);
     }
-
     return arrayListObj;
 }
 
@@ -60,8 +49,8 @@ extern "C" JNIEXPORT jstring
 JNICALL
 Java_com_example_ndkdemo_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz) {
     jstring result = env->NewStringUTF("Hello from C++");
-    return
-            result;
+    env->DeleteLocalRef(result);
+    return result;
 }
 
 extern "C"

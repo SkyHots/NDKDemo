@@ -10,7 +10,7 @@ struct student {
 extern "C" JNIEXPORT jobject
 
 JNICALL
-Java_com_example_ndkdemo_MainActivity_getStudentList(JNIEnv *env, jobject thiz, jobject student, jint len) {
+Java_com_example_ndkdemo_Jni_getStudentList(JNIEnv *env, jobject thiz, jobject student, jint len) {
     // 获取 Student 类的引用
     jclass studentClass = env->GetObjectClass(student);
     // 获取 name 和 age 字段的 ID
@@ -47,15 +47,14 @@ Java_com_example_ndkdemo_MainActivity_getStudentList(JNIEnv *env, jobject thiz, 
 
 extern "C" JNIEXPORT jstring
 JNICALL
-Java_com_example_ndkdemo_MainActivity_stringFromJNI(JNIEnv *env, jobject thiz) {
+Java_com_example_ndkdemo_Jni_stringFromJNI(JNIEnv *env, jobject thiz) {
     jstring result = env->NewStringUTF("Hello from C++");
-    env->DeleteLocalRef(result);
     return result;
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_example_ndkdemo_MainActivity_changeStudentName(JNIEnv *env, jobject thiz, jobject student) {
+Java_com_example_ndkdemo_Jni_changeStudentName(JNIEnv *env, jobject thiz, jobject student) {
     jclass clazz = env->GetObjectClass(student);
     jmethodID setName = env->GetMethodID(clazz, "setName", "(Ljava/lang/String;)V");
     jstring changedName = env->NewStringUTF("changedName");
@@ -66,7 +65,7 @@ Java_com_example_ndkdemo_MainActivity_changeStudentName(JNIEnv *env, jobject thi
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_com_example_ndkdemo_MainActivity_getByte(JNIEnv *env, jobject thiz, jbyteArray bytes) {
+Java_com_example_ndkdemo_Jni_getByte(JNIEnv *env, jobject thiz, jbyteArray bytes) {
     jsize arrayLength = env->GetArrayLength(bytes);
     jbyte *data = env->GetByteArrayElements(bytes, nullptr);
     for (int i = 0; i < arrayLength; ++i) {
@@ -110,7 +109,7 @@ int32_t sfdc_tc_execute(const char *tc_name, struct tc_record *record, uint16_t 
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj, jstring tcName, jobject recordObject) {
+Java_com_example_ndkdemo_Jni_sfdc_1tc_1execute(JNIEnv *env, jobject obj, jstring tcName, jobject recordObject) {
     const char *tc_name = env->GetStringUTFChars(tcName, NULL);
     struct tc_record record;
     // 获取Java类的引用
@@ -178,7 +177,7 @@ Java_com_example_ndkdemo_MainActivity_sfdc_1tc_1execute(JNIEnv *env, jobject obj
 
 extern "C"
 JNIEXPORT jobjectArray JNICALL
-Java_com_example_ndkdemo_MainActivity_tranListToArray(JNIEnv *env, jobject thiz, jobject students) {
+Java_com_example_ndkdemo_Jni_tranListToArray(JNIEnv *env, jobject thiz, jobject students) {
     jclass listClass = env->GetObjectClass(students);
     jmethodID size = env->GetMethodID(listClass, "size", "()I");
     jclass jclassStu = env->FindClass("com/example/ndkdemo/Student");
